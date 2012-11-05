@@ -105,4 +105,74 @@ describe Contact do
     end
   end
 
+  context "/contacts/<contact_id>/savedsearches", :support do
+    on_get_it "should get all the saved searches belonging to the customer" do
+      stub_api_get("/my/contact", 'contacts/my.json')
+      contact = Contact.my
+      stub_api_get("/contacts/#{contact.Id}/savedsearches", 'saved_searches/get.json')
+      contact.should respond_to(:saved_searches)
+      saved_searches = contact.saved_searches
+      saved_searches.should be_an(Array)
+      saved_searches.length.should eq(2)
+    end
+
+    on_post_it "should create the new saved searches" do
+      stub_api_get("/my/contact", 'contacts/my.json')
+      contact = Contact.my
+      stub_api_get("/contacts/#{contact.Id}/savedsearches", 'contacts/saved_searches/get.json')
+      contact.saved_searches_will_change!
+      contact.saved_searches << SavedSearch.new({ :Name => "A new search name here", :Filter => "City eq 'Test 1'" })
+      contact.saved_searches << SavedSearch.new({ :Name => "A new search name here", :Filter => "City eq 'Test 1'" })
+      contact.saved_searches.length.should eq(4)
+      stub_api_post("/contacts/#{contact.Id}/savedsearches", "contacts/saved_searches/new.json", "saved_searches/post.json")
+      contact.save.should be true
+    end
+
+  end
+
+  context "/contacts/<contact_id>/listingcarts", :support do
+     on_get_it "should get all the listing carts belonging to the customer" do
+       stub_api_get("/my/contact", 'contacts/my.json')
+       contact = Contact.my
+       stub_api_get("/contacts/#{contact.Id}/listingcarts", 'listing_carts/listing_cart.json')
+       contact.should respond_to(:listing_carts)
+       saved_searches = contact.listing_carts
+       saved_searches.should be_an(Array)
+       saved_searches.length.should eq(2)
+     end
+
+     on_post_it "should create the new listing carts" do
+       stub_api_get("/my/contact", 'contacts/my.json')
+       contact = Contact.my
+       stub_api_get("/contacts/#{contact.Id}/listingcarts", 'contacts/listing_carts/get.json')
+       contact.listing_carts_will_change!
+       contact.listing_carts << ListingCart.new({:Name => "LC A", :ListingIds => ['20081118213437693901000000']})
+       contact.listing_carts << ListingCart.new({:Name => "LC B", :ListingIds => ['20081118213437693901000000']})
+       contact.listing_carts << ListingCart.new({:Name => "LC C", :ListingIds => ['20081118213437693901000000','20081118213437693901000000']})
+       contact.listing_carts.length.should eq(5)
+       stub_api_post("/contacts/#{contact.Id}/listingcarts", "contacts/listing_carts/new.json", "listing_carts/post.json")
+       contact.save.should be true
+     end
+
+  end
+
+  context  "/contacts/<contact_id>/portal", :support do
+    on_get_it "should return account information for the current user/contact?" do
+      stub_api_get("/my/contact", 'contacts/my.json')
+      contact = Contact.my
+      stub_api_get("/contacts/#{contact.Id}/portal", 'contacts/vow_accounts/get.json')
+      vow_account = contact.vow_account
+      vow_account.persisted?.should be_true
+    end
+
+    on_post_it "should create a consumer account" do
+
+    end
+
+    on_put_it "should update a consumer account" do
+
+    end
+
+  end
+
 end

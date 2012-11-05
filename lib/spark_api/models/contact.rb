@@ -18,7 +18,11 @@ module SparkApi
       def self.my(arguments={})
         new(connection.get('/my/contact', arguments).first)
       end
-            
+
+      def vow_account(arguments={})
+        @vow_account ||= VowAccount.new(connection.get("/contacts/#{self.Id}/portal", arguments).first)
+      end
+
       # Notify the agent of contact creation via a Spark notification.
       def notify?; params_for_save[:Notify] == true end
       def notify=(notify_me)
