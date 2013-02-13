@@ -21,7 +21,8 @@ module SparkApi
       end
 
       @connection = Faraday.new(opts) do |builder|
-        builder.response :spark_api
+        builder.response :spark_api_response
+        #builder.response :gzip_response
         #builder.adapter Faraday.default_adapter
         builder.use Faraday::Adapter::Typhoeus
       end
@@ -32,8 +33,9 @@ module SparkApi
     # HTTP request headers for client requests
     def headers
       {
-        :accept => 'application/json',
-        :content_type => 'application/json',
+        #:accept => 'application/json',
+        :accept_encoding => 'gzip, deflate',
+        #:content_type => 'application/json',
         :user_agent => Configuration::DEFAULT_USER_AGENT,
         Configuration::X_SPARK_API_USER_AGENT => user_agent
       }
